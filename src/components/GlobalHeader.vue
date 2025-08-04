@@ -21,7 +21,23 @@
 
       <a-col flex="120px">
         <div class="user-login-status">
-          <a-button type="primary" href="/user/login">Login</a-button>
+          <div v-if="loginUserStore.loginUser.id">
+            <a-dropdown>
+              <a-avatar :src="loginUserStore.loginUser.userAvatar" />
+              {{ loginUserStore.loginUser.userName ?? 'No Name' }}
+              <template #overlay>
+                <a-menu>
+                  <a-menu-item @click="doLogout">
+                    <LogoutOutlined />
+                    Logout
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
+          </div>
+          <div v-else>
+            <a-button type="primary" href="/user/login">Login</a-button>
+          </div>
         </div>
       </a-col>
     </a-row>
@@ -30,10 +46,13 @@
 
 <script lang="ts" setup>
 import { h, ref } from 'vue'
-import { HomeOutlined, AppstoreOutlined, SettingOutlined } from '@ant-design/icons-vue'
-import { MenuProps } from 'ant-design-vue'
+import { HomeOutlined, LogoutOutlined } from '@ant-design/icons-vue'
+import { MenuProps, message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
+import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
+import { userLogoutUsingPost } from '@/api/userController.ts'
 
+const loginUserStore = useLoginUserStore()
 const items = ref<MenuProps['items']>([
   {
     key: '/',
@@ -59,6 +78,20 @@ const doMenuClick = ({ key }) => {
     path: key,
   })
 }
+
+const doLogout = async () => {
+  const res = await userLogoutUsingPost()
+  if (res.data.code === 0) {
+    loginUserStore.setLoginUser({
+      userName: "Not login"
+    })
+    message.success("Logout successful")
+    router.push('/user/login')
+  } else {
+    message.error("Logout fail " + res.data.message)
+  }
+}
+
 router.afterEach((to, from, next) => {
   current.value = [to.path]
 })
