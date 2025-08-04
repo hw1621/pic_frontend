@@ -23,8 +23,10 @@
         <div class="user-login-status">
           <div v-if="loginUserStore.loginUser.id">
             <a-dropdown>
-              <a-avatar :src="loginUserStore.loginUser.userAvatar" />
-              {{ loginUserStore.loginUser.userName ?? 'No Name' }}
+              <ASpace>
+                <a-avatar :src="loginUserStore.loginUser.userAvatar" />
+                {{ loginUserStore.loginUser.userName ?? 'No Name' }}
+              </ASpace>
               <template #overlay>
                 <a-menu>
                   <a-menu-item @click="doLogout">
@@ -83,12 +85,12 @@ const doLogout = async () => {
   const res = await userLogoutUsingPost()
   if (res.data.code === 0) {
     loginUserStore.setLoginUser({
-      userName: "Not login"
+      userName: 'Not login',
     })
-    message.success("Logout successful")
+    message.success('Logout successful')
     router.push('/user/login')
   } else {
-    message.error("Logout fail " + res.data.message)
+    message.error('Logout fail ' + res.data.message)
   }
 }
 
