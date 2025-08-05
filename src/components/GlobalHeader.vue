@@ -63,9 +63,9 @@ const items = ref<MenuProps['items']>([
     title: 'Home',
   },
   {
-    key: '/about',
-    label: 'About',
-    title: 'About',
+    key: '/admin/userManage',
+    label: 'User Management',
+    title: 'User Management',
   },
   {
     key: 'alipay',
