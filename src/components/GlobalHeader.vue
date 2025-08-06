@@ -47,7 +47,7 @@
 </template>
 
 <script lang="ts" setup>
-import { h, ref } from 'vue'
+import { computed, h, ref } from 'vue'
 import { HomeOutlined, LogoutOutlined } from '@ant-design/icons-vue'
 import { MenuProps, message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
@@ -55,7 +55,7 @@ import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 import { userLogoutUsingPost } from '@/api/userController.ts'
 
 const loginUserStore = useLoginUserStore()
-const items = ref<MenuProps['items']>([
+const originItems = [
   {
     key: '/',
     icon: () => h(HomeOutlined),
@@ -72,7 +72,22 @@ const items = ref<MenuProps['items']>([
     label: h('a', { href: 'https://antdv.com', target: '_blank' }, 'Navigation Four - Link'),
     title: 'Navigation Four - Link',
   },
-])
+]
+
+const items = computed<MenuProps['items']>(() => filterMenus(originItems))
+
+const filterMenus = (menus = [] as MenuProps['items']) => {
+  return menus?.filter((menu) => {
+    if (menu?.key?.startsWith('/admin')) {
+      const loginUser = loginUserStore.loginUser
+      if (!loginUser || loginUser.userRole !== 'admin') {
+      }
+      return false
+    }
+    return true
+  })
+}
+
 const router = useRouter()
 const current = ref<string[]>([])
 const doMenuClick = ({ key }) => {
