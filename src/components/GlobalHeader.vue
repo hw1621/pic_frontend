@@ -73,9 +73,9 @@ const originItems = [
     title: 'Add Picture',
   },
   {
-    key: 'alipay',
-    label: h('a', { href: 'https://antdv.com', target: '_blank' }, 'Navigation Four - Link'),
-    title: 'Navigation Four - Link',
+    key: '/admin/pictureManage',
+    label: 'Picture Manage',
+    title: 'Picture Manage',
   },
 ]
 
@@ -86,8 +86,8 @@ const filterMenus = (menus = [] as MenuProps['items']) => {
     if (menu?.key?.startsWith('/admin')) {
       const loginUser = loginUserStore.loginUser
       if (!loginUser || loginUser.userRole !== 'admin') {
+        return false
       }
-      return false
     }
     return true
   })
