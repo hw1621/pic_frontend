@@ -1,6 +1,8 @@
 <template>
   <div id="addPicturePage">
-    <h2 style="margin-bottom: 16px">Create Picture</h2>
+    <h2 style="margin-bottom: 16px">
+      {{ route.query?.id ? 'Edit Picture' : 'Create Picture'}}
+    </h2>
     <PictureUpload :picture="picture" :onSuccess="onSuccess" />
     <a-form v-if="picture" layout="vertical" :model="pictureForm" @finish="handleSubmit">
       <a-form-item label="name" name="name">
@@ -16,11 +18,17 @@
         />
       </a-form-item>
       <a-form-item label="category" name="category">
-        <a-auto-complete v-model:value="pictureForm.category" placeholder="Please enter category" allowClear />
+        <a-auto-complete
+          v-model:value="pictureForm.category"
+          :options="categoryOptions"
+          placeholder="Please enter category"
+          allowClear
+        />
       </a-form-item>
       <a-form-item label="tags" name="tags">
         <a-select
           v-model:value="pictureForm.tags"
+          :options="tagOptions"
           mode="tags"
           placeholder="Please enter tags"
           allowClear
@@ -36,8 +44,12 @@
 <script setup lang="ts">
 import PictureUpload from '@/components/PictureUpload.vue'
 import { onMounted, reactive, ref } from 'vue'
-import { editPictureUsingPost, listPictureTagCategoryUsingGet } from '@/api/pictureController.ts'
-import { useRouter } from 'vue-router'
+import {
+  editPictureUsingPost,
+  getPictureVoByIdUsingGet,
+  listPictureTagCategoryUsingGet,
+} from '@/api/pictureController.ts'
+import { useRoute, useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
 
 const router = useRouter()
@@ -97,4 +109,34 @@ onMounted(() => {
   getTagCategoryOptions()
 })
 
+const route = useRoute()
+const getOldPicture = async () => {
+  // 获取数据
+  const id = route.query?.id
+  if (id) {
+    const res = await getPictureVoByIdUsingGet({
+      id: id,
+    })
+    if (res.data.code === 0 && res.data.data) {
+      const data = res.data.data
+      picture.value = data
+      pictureForm.name = data.name
+      pictureForm.introduction = data.introduction
+      pictureForm.category = data.category
+      pictureForm.tags = data.tags
+    }
+  }
+}
+
+onMounted(() => {
+  getOldPicture()
+})
 </script>
+
+<style>
+#addPicturePage {
+max-width: 720px;
+margin: 0 auto;
+}
+</style>
+
