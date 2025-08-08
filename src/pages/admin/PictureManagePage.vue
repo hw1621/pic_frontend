@@ -58,7 +58,10 @@
           {{ dayjs(record.editTime).format('YYYY-MM-DD HH:mm:ss') }}
         </template>
         <template v-else-if="column.key === 'action'">
-          <a-button type="link" danger @click="doDelete(record.id)">Delete</a-button>
+          <a-space>
+            <a-button type="link" :href="`/add_picture?id=${record.id}`" target="_blank">Edit</a-button>
+            <a-button type="link" danger @click="doDelete(record.id)">Delete</a-button>
+          </a-space>
         </template>
       </template>
     </a-table>
