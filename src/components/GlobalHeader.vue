@@ -68,6 +68,11 @@ const originItems = [
     title: 'User Management',
   },
   {
+    key: '/add_picture',
+    label: 'Add Picture',
+    title: 'Add Picture',
+  },
+  {
     key: 'alipay',
     label: h('a', { href: 'https://antdv.com', target: '_blank' }, 'Navigation Four - Link'),
     title: 'Navigation Four - Link',
