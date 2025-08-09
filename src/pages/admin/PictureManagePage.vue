@@ -3,11 +3,7 @@
     <!-- Search -->
     <a-form layout="inline" :model="searchParams" @finish="doSearch">
       <a-form-item label="keywords">
-        <a-input
-          v-model:value="searchParams.searchText"
-          placeholder="Keywords"
-          allow-clear
-        />
+        <a-input v-model:value="searchParams.searchText" placeholder="Keywords" allow-clear />
       </a-form-item>
       <a-form-item label="category">
         <a-input v-model:value="searchParams.category" placeholder="Category" allow-clear />
@@ -21,6 +17,16 @@
           allow-clear
         />
       </a-form-item>
+      <a-form-item label="review status" name="reviewStatus">
+        <a-select
+          v-model:value="searchParams.reviewStatus"
+          :options="PIC_REVIEW_STATUS_OPTIONS"
+          placeholder="Please enter review status"
+          style="min-width: 180px"
+          allow-clear
+        />
+      </a-form-item>
+
       <a-form-item>
         <a-button type="primary" html-type="submit">Search</a-button>
       </a-form-item>
@@ -51,6 +57,12 @@
           <div>Scale：{{ record.picScale }}</div>
           <div>Size：{{ (record.picSize / 1024).toFixed(2) }}KB</div>
         </template>
+        <!-- 审核信息 -->
+        <template v-if="column.dataIndex === 'reviewMessage'">
+          <div>Review Status：{{ PIC_REVIEW_STATUS_MAP[record.reviewStatus] }}</div>
+          <div>Review Message：{{ record.reviewMessage }}</div>
+          <div>Reviewer：{{ record.reviewerId }}</div>
+        </template>
         <template v-else-if="column.dataIndex === 'createTime'">
           {{ dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss') }}
         </template>
@@ -58,9 +70,26 @@
           {{ dayjs(record.editTime).format('YYYY-MM-DD HH:mm:ss') }}
         </template>
         <template v-else-if="column.key === 'action'">
-          <a-space>
-            <a-button type="link" :href="`/add_picture?id=${record.id}`" target="_blank">Edit</a-button>
-            <a-button type="link" danger @click="doDelete(record.id)">Delete</a-button>
+          <a-space wrap>
+            <a-button
+              v-if="record.reviewStatus !== PIC_REVIEW_STATUS_ENUM.PASS"
+              type="link"
+              @click="handleReview(record, PIC_REVIEW_STATUS_ENUM.PASS)"
+            >
+              通过
+            </a-button>
+            <a-button
+              v-if="record.reviewStatus !== PIC_REVIEW_STATUS_ENUM.REJECT"
+              type="link"
+              danger
+              @click="handleReview(record, PIC_REVIEW_STATUS_ENUM.REJECT)"
+            >
+              拒绝
+            </a-button>
+            <a-button type="link" :href="`/add_picture?id=${record.id}`" target="_blank"
+              >编辑
+            </a-button>
+            <a-button type="link" danger @click="doDelete(record.id)">删除</a-button>
           </a-space>
         </template>
       </template>
@@ -70,9 +99,18 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
-import { deletePictureUsingPost, listPictureByPageUsingPost } from '@/api/pictureController.ts'
+import {
+  deletePictureUsingPost,
+  doPictureReviewUsingPost,
+  listPictureByPageUsingPost,
+} from '@/api/pictureController.ts'
 import { message } from 'ant-design-vue'
 import dayjs from 'dayjs'
+import {
+  PIC_REVIEW_STATUS_ENUM,
+  PIC_REVIEW_STATUS_MAP,
+  PIC_REVIEW_STATUS_OPTIONS,
+} from '@/constants/picture.ts'
 
 const columns = [
   {
@@ -109,6 +147,10 @@ const columns = [
     title: 'User id',
     dataIndex: 'userId',
     width: 80,
+  },
+  {
+    title: 'Review message',
+    dataIndex: 'reviewMessage',
   },
   {
     title: 'CreateTime',
@@ -177,6 +219,25 @@ const fetchData = async () => {
     total.value = res.data.data.total ?? 0
   } else {
     message.error('Fetch picture data fail: ' + res.data.message)
+  }
+}
+
+const handleReview = async (record: API.Picture, reviewStatus: number) => {
+  const reviewMessage =
+    reviewStatus === PIC_REVIEW_STATUS_ENUM.PASS
+      ? 'Administrator review passed'
+      : 'Administrator review rejected'
+  const res = await doPictureReviewUsingPost({
+    id: record.id,
+    reviewStatus,
+    reviewMessage,
+  })
+  if (res.data.code === 0) {
+    message.success('Review operation success')
+    // 重新获取列表
+    fetchData()
+  } else {
+    message.error('Review operation fail，' + res.data.message)
   }
 }
 
