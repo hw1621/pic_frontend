@@ -3,7 +3,16 @@
     <h2 style="margin-bottom: 16px">
       {{ route.query?.id ? 'Edit Picture' : 'Create Picture'}}
     </h2>
-    <PictureUpload :picture="picture" :onSuccess="onSuccess" />
+    <!-- 选择上传方式 -->
+    <a-tabs v-model:activeKey="uploadType">
+      <a-tab-pane key="file" tab="File Upload">
+        <PictureUpload :picture="picture" :onSuccess="onSuccess" />
+      </a-tab-pane>
+      <a-tab-pane key="url" tab="URL Upload" force-render>
+        <UrlPictureUpload :picture="picture" :onSuccess="onSuccess" />
+      </a-tab-pane>
+    </a-tabs>
+    <!-- 图片上传表单 -->
     <a-form v-if="picture" layout="vertical" :model="pictureForm" @finish="handleSubmit">
       <a-form-item label="name" name="name">
         <a-input v-model:value="pictureForm.name" placeholder="Please enter name" />
@@ -51,10 +60,13 @@ import {
 } from '@/api/pictureController.ts'
 import { useRoute, useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
+import UrlPictureUpload from '@/components/UrlPictureUpload.vue'
 
 const router = useRouter()
 const picture = ref<API.PictureVO>()
+const uploadType = ref<'file' | 'url'>('file')
 const pictureForm = reactive<API.PictureEditRequest>({})
+
 const onSuccess = (newPicture: API.PictureVO) => {
   picture.value = newPicture
   pictureForm.name = newPicture.name
