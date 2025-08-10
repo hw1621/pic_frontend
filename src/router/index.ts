@@ -6,6 +6,7 @@ import AddPicturePage from '@/pages/AddPicturePage.vue'
 import PictureManagePage from '@/pages/admin/PictureManagePage.vue'
 import HomePage from '@/pages/HomePage.vue'
 import PictureDetailPage from '@/pages/PictureDetailPage.vue'
+import AddPictureBatchPage from '@/pages/AddPictureBatchPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,6 +46,11 @@ const router = createRouter({
       name: 'picture detail info',
       component: PictureDetailPage,
       props: true,
+    },
+    {
+      path: '/add_picture/batch',
+      name: 'Batch insert picture',
+      component: AddPictureBatchPage,
     },
   ],
 })
