@@ -77,6 +77,11 @@ const originItems = [
     label: 'Picture Manage',
     title: 'Picture Manage',
   },
+  {
+    key: '/admin/spaceManage',
+    label: 'Space Manage',
+    title: 'Space Manage',
+  },
 ]
 
 const items = computed<MenuProps['items']>(() => filterMenus(originItems))

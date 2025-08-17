@@ -7,6 +7,7 @@ import PictureManagePage from '@/pages/admin/PictureManagePage.vue'
 import HomePage from '@/pages/HomePage.vue'
 import PictureDetailPage from '@/pages/PictureDetailPage.vue'
 import AddPictureBatchPage from '@/pages/AddPictureBatchPage.vue'
+import SpaceManagePage from '@/pages/admin/SpaceManagePage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,6 +47,11 @@ const router = createRouter({
       name: 'picture detail info',
       component: PictureDetailPage,
       props: true,
+    },
+    {
+      path: '/admin/spaceManage',
+      name: 'Space Manage',
+      component: SpaceManagePage,
     },
     {
       path: '/add_picture/batch',
