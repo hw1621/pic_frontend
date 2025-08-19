@@ -46,8 +46,8 @@
         </template>
         <!-- 使用情况 -->
         <template v-if="column.dataIndex === 'spaceUseInfo'">
-          <div>大小：{{ formatSize(record.totalSize) }} / {{ formatSize(record.maxSize) }}</div>
-          <div>数量：{{ record.totalCount }} / {{ record.maxCount }}</div>
+          <div>Size：{{ formatSize(record.totalSize) }} / {{ formatSize(record.maxSize) }}</div>
+          <div>Count：{{ record.totalCount }} / {{ record.maxCount }}</div>
         </template>
         <template v-else-if="column.dataIndex === 'createTime'">
           {{ dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss') }}
@@ -75,8 +75,6 @@ import { message } from 'ant-design-vue'
 import dayjs from 'dayjs'
 import { formatSize } from '@/utils'
 import { SPACE_LEVEL_MAP, SPACE_LEVEL_OPTIONS } from '@/constants/space.ts'
-import { PIC_REVIEW_STATUS_OPTIONS } from '@/constants/picture.ts'
-import { deletePictureUsingPost } from '@/api/pictureController.ts'
 
 const columns = [
   {
@@ -85,32 +83,32 @@ const columns = [
     width: 80,
   },
   {
-    title: '空间名称',
+    title: 'Space Name',
     dataIndex: 'spaceName',
   },
   {
-    title: '空间级别',
+    title: 'Space Level',
     dataIndex: 'spaceLevel',
   },
   {
-    title: '使用情况',
+    title: 'Usage',
     dataIndex: 'spaceUseInfo',
   },
   {
-    title: '用户 id',
+    title: 'User id',
     dataIndex: 'userId',
     width: 80,
   },
   {
-    title: '创建时间',
+    title: 'Create Time',
     dataIndex: 'createTime',
   },
   {
-    title: '编辑时间',
+    title: 'Edit Time',
     dataIndex: 'editTime',
   },
   {
-    title: '操作',
+    title: 'Action',
     key: 'action',
   },
 ]
