@@ -22,7 +22,7 @@
               <template #description>
                 <a-flex>
                   <a-tag color="green">
-                    {{ picture.category ?? '默认' }}
+                    {{ picture.category ?? 'Default' }}
                   </a-tag>
                   <a-tag v-for="tag in picture.tags" :key="tag">
                     {{ tag }}
@@ -31,12 +31,16 @@
               </template>
             </a-card-meta>
             <template v-if="showOp" #actions>
+              <a-space @click="(e) => doSearch(picture, e)">
+                <SearchOutlined />
+                Search
+              </a-space>
               <a-space @click="(e) => doEdit(picture, e)">
-                <edit-outlined />
+                <EditOutlined />
                 Edit
               </a-space>
               <a-space @click="(e) => doDelete(picture, e)">
-                <delete-outlined />
+                <DeleteOutlined />
                 Delete
               </a-space>
             </template>
@@ -49,7 +53,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons-vue'
+import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons-vue'
 import { deletePictureUsingPost } from '@/api/pictureController.ts'
 import { message } from 'ant-design-vue'
 
@@ -85,6 +89,14 @@ const doEdit = (picture, e) => {
     },
   })
 }
+
+// 搜索
+const doSearch = (picture, e) => {
+  e.stopPropagation()
+  window.open(`/search_picture?pictureId=${picture.id}`)
+}
+
+
 // 删除
 const doDelete = async (picture, e) => {
   const id = picture.id
@@ -100,6 +112,8 @@ const doDelete = async (picture, e) => {
   }
   router.push('/')
 }
+
+
 </script>
 
 <style scoped></style>

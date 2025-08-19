@@ -11,6 +11,7 @@ import SpaceManagePage from '@/pages/admin/SpaceManagePage.vue'
 import AddSpacePage from '@/pages/AddSpacePage.vue'
 import SpaceDetailPage from '@/pages/SpaceDetailPage.vue'
 import MySpacePage from '@/pages/MySpacePage.vue'
+import SearchPicturePage from '@/pages/SearchPicturePage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -77,6 +78,11 @@ const router = createRouter({
       name: 'my space',
       component: MySpacePage,
     },
+    {
+      path: '/search_picture',
+      name: 'Search pic by pic',
+      component: SearchPicturePage,
+    }
   ],
 })
 
