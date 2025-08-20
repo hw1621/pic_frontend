@@ -4,10 +4,7 @@
       <!-- 图片展示区 -->
       <a-col :sm="24" :md="16" :xl="18">
         <a-card title="图片预览">
-          <a-image
-            style="max-height: 600px; object-fit: contain"
-            :src="picture.url"
-          />
+          <a-image style="max-height: 600px; object-fit: contain" :src="picture.url" />
         </a-card>
       </a-col>
       <!-- 图片信息区 -->
@@ -52,6 +49,18 @@
           </a-descriptions>
 
           <a-space wrap>
+            <a-button type="primary" @click="doDownload">
+              Download
+              <template #icon>
+                <DownloadOutlined />
+              </template>
+            </a-button>
+            <a-button type="primary" ghost @click="doShare">
+              Share
+              <template #icon>
+                <ShareAltOutlined />
+              </template>
+            </a-button>
             <a-button v-if="canEdit" type="default" @click="doEdit">
               Edit
               <template #icon>
@@ -64,37 +73,23 @@
                 <DeleteOutlined />
               </template>
             </a-button>
-            <a-button type="primary" @click="doDownload">
-              Download
-              <template #icon>
-                <DownloadOutlined />
-              </template>
-            </a-button>
-
           </a-space>
-
         </a-card>
       </a-col>
     </a-row>
-
+    <ShareModal ref="shareModalRef" :link="shareLink" />
   </div>
-
 </template>
 
-
 <script lang="ts" setup>
-
 import { computed, onMounted, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import { deletePictureUsingPost, getPictureVoByIdUsingGet } from '@/api/pictureController.ts'
-import {
-  DeleteOutlined,
-  DownloadOutlined,
-  EditOutlined,
-} from '@ant-design/icons-vue'
+import { DeleteOutlined, DownloadOutlined, EditOutlined, ShareAltOutlined } from '@ant-design/icons-vue'
 import { downloadImage, formatSize } from '@/utils'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 import { useRouter } from 'vue-router'
+import ShareModal from '@/components/ShareModal.vue'
 
 const props = defineProps<{
   id: string | number
@@ -121,7 +116,7 @@ const fetchPictureDetail = async () => {
 const loginUserStore = useLoginUserStore()
 // 是否具有编辑权限
 const canEdit = computed(() => {
-  const loginUser = loginUserStore.loginUser;
+  const loginUser = loginUserStore.loginUser
   // 未登录不可编辑
   if (!loginUser.id) {
     return false
@@ -165,7 +160,15 @@ onMounted(() => {
   fetchPictureDetail()
 })
 
+const shareModalRef = ref()
+// 分享链接
+const shareLink = ref<string>()
 
-
-
+// 分享
+const doShare = () => {
+  shareLink.value = `${window.location.protocol}//${window.location.host}/picture/${picture.value.id}`
+  if (shareModalRef.value) {
+    shareModalRef.value.openModal()
+  }
+}
 </script>
