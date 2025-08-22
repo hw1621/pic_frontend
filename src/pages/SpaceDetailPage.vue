@@ -4,6 +4,7 @@
     <a-flex justify="space-between">
       <h2>{{ space.spaceName }}（Private Space）</h2>
       <a-space size="middle">
+        <a-button :icon="h(EditOutlined)" @click="doBatchEdit"> Batch Edit</a-button>
         <a-button type="primary" :href="`/add_picture?spaceId=${id}`" target="_blank">
           + Add picture
         </a-button>
@@ -18,9 +19,9 @@
         </a-tooltip>
       </a-space>
     </a-flex>
-    <PictureSearchForm :onSearch="onSearch"/>
+    <PictureSearchForm :onSearch="onSearch" />
     <!-- 图片列表 -->
-    <PictureList :dataList="dataList" :loading="loading" :showOp="true" :onReload="fetchData"/>
+    <PictureList :dataList="dataList" :loading="loading" :showOp="true" :onReload="fetchData" />
     <a-pagination
       style="text-align: right"
       v-model:current="searchParams.current"
@@ -29,17 +30,25 @@
       :show-total="() => `Total count ${total} / ${space.maxCount}`"
       @change="onPageChange"
     />
+    <BatchEditPictureModal
+      ref="batchEditPictureModalRef"
+      :spaceId="id"
+      :pictureList="dataList"
+      :onSuccess="onBatchEditPictureSuccess"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from 'vue'
+import { h, onMounted, reactive, ref } from 'vue'
 import { getSpaceVoByIdUsingGet } from '@/api/spaceController.ts'
 import { message } from 'ant-design-vue'
 import { listPictureVoByPageUsingPost } from '@/api/pictureController.ts'
 import { formatSize } from '@/utils'
 import PictureList from '@/components/PictureList.vue'
 import PictureSearchForm from '@/components/PictureSearchForm.vue'
+import BatchEditPictureModal from '@/components/BatchEditPictureModal.vue'
+import { EditOutlined } from '@ant-design/icons-vue'
 
 const props = defineProps<{
   id: string | number
@@ -104,7 +113,6 @@ const fetchData = async () => {
   loading.value = false
 }
 
-
 const onSearch = (newSearchParams: API.PictureQueryRequest) => {
   searchParams.value = {
     ...searchParams.value,
@@ -113,6 +121,21 @@ const onSearch = (newSearchParams: API.PictureQueryRequest) => {
   }
   fetchData()
 }
+
+//批量编辑图片弹窗ref
+const batchEditPictureModalRef = ref()
+const onBatchEditPictureSuccess = () => {
+  fetchData()
+}
+
+// 打开批量编辑弹窗
+const doBatchEdit = () => {
+  if (batchEditPictureModalRef.value) {
+    batchEditPictureModalRef.value.openModal()
+  }
+}
+
+
 
 // 页面加载时请求一次
 onMounted(() => {
