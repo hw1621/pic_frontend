@@ -1,7 +1,7 @@
 <template>
   <div id="addPicturePage">
     <h2 style="margin-bottom: 16px">
-      {{ route.query?.id ? 'Edit Picture' : 'Create Picture'}}
+      {{ route.query?.id ? 'Edit Picture' : 'Create Picture' }}
     </h2>
     <a-typography-paragraph v-if="spaceId" type="secondary">
       Save to space：<a :href="`/space/${spaceId}`" target="_blank">{{ spaceId }}</a>
@@ -15,6 +15,19 @@
         <UrlPictureUpload :picture="picture" :spaceId="spaceId" :onSuccess="onSuccess" />
       </a-tab-pane>
     </a-tabs>
+
+    <!-- 编辑图片按钮 -->
+    <div v-if="picture" class="edit-bar">
+      <a-button :icon="h(EditOutlined)" @click="doEditPicture">Edit Picture</a-button>
+      <ImageCropper
+        ref="imageCropperRef"
+        :imageUrl="picture?.url"
+        :picture="picture"
+        :spaceId-id="spaceId"
+        :onSuccess="onCropSuccess"
+      />
+    </div>
+
     <!-- 图片上传表单 -->
     <a-form v-if="picture" layout="vertical" :model="pictureForm" @finish="handleSubmit">
       <a-form-item label="name" name="name">
@@ -55,7 +68,7 @@
 
 <script setup lang="ts">
 import PictureUpload from '@/components/PictureUpload.vue'
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, h, onMounted, reactive, ref } from 'vue'
 import {
   editPictureUsingPost,
   getPictureVoByIdUsingGet,
@@ -64,6 +77,8 @@ import {
 import { useRoute, useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
 import UrlPictureUpload from '@/components/UrlPictureUpload.vue'
+import ImageCropper from '@/components/ImageCropper.vue'
+import { EditOutlined } from '@ant-design/icons-vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -129,6 +144,21 @@ onMounted(() => {
   getTagCategoryOptions()
 })
 
+// 图片编辑弹窗引用
+const imageCropperRef = ref()
+
+// 编辑图片
+const doEditPicture = () => {
+  if (imageCropperRef.value) {
+    imageCropperRef.value.openModal()
+  }
+}
+
+// 编辑成功事件
+const onCropSuccess = (newPicture: API.PictureVO) => {
+  picture.value = newPicture
+}
+
 const getOldPicture = async () => {
   // 获取数据
   const id = route.query?.id
@@ -154,8 +184,12 @@ onMounted(() => {
 
 <style>
 #addPicturePage {
-max-width: 720px;
-margin: 0 auto;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+#addPicturePage .edit-bar {
+  text-align: center;
+  margin: 16px 0;
 }
 </style>
-
