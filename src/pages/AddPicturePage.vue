@@ -18,13 +18,30 @@
 
     <!-- 编辑图片按钮 -->
     <div v-if="picture" class="edit-bar">
-      <a-button :icon="h(EditOutlined)" @click="doEditPicture">Edit Picture</a-button>
+      <a-space size="middle">
+        <a-button :icon="h(EditOutlined)" @click="doEditPicture">Edit Picture</a-button>
+        <a-button type="primary" ghost :icon="h(FullscreenOutlined)" @click="doImagePainting">
+          AI OutPainting
+        </a-button>
+      </a-space>
+      <ImageOutPainting
+        ref="imageOutPaintingRef"
+        :picture="picture"
+        :spaceId="spaceId"
+        :onSuccess="onImageOutPaintingSuccess"
+      />
       <ImageCropper
         ref="imageCropperRef"
         :imageUrl="picture?.url"
         :picture="picture"
         :spaceId-id="spaceId"
         :onSuccess="onCropSuccess"
+      />
+      <ImageOutPainting
+        ref="imageOutPaintingRef"
+        :picture="picture"
+        :spaceId="spaceId"
+        :onSuccess="onImageOutPaintingSuccess"
       />
     </div>
 
@@ -78,7 +95,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
 import UrlPictureUpload from '@/components/UrlPictureUpload.vue'
 import ImageCropper from '@/components/ImageCropper.vue'
-import { EditOutlined } from '@ant-design/icons-vue'
+import { EditOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
+import ImageOutPainting from '@/components/ImageOutPainting.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -146,16 +164,27 @@ onMounted(() => {
 
 // 图片编辑弹窗引用
 const imageCropperRef = ref()
-
 // 编辑图片
 const doEditPicture = () => {
   if (imageCropperRef.value) {
     imageCropperRef.value.openModal()
   }
 }
-
 // 编辑成功事件
 const onCropSuccess = (newPicture: API.PictureVO) => {
+  picture.value = newPicture
+}
+
+// AI 扩图弹窗引用
+const imageOutPaintingRef = ref()
+// AI 扩图
+const doImagePainting = () => {
+  if (imageOutPaintingRef.value) {
+    imageOutPaintingRef.value.openModal()
+  }
+}
+// 编辑成功事件
+const onImageOutPaintingSuccess = (newPicture: API.PictureVO) => {
   picture.value = newPicture
 }
 
